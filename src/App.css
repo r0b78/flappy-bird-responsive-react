@@ -53,6 +53,21 @@
   transform: translate(-50%, -50%);
 }
 
+.gamestart-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+}
+.gamestart-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+
 .bird {
   background: red;
   height: 40px;

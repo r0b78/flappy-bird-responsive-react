@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { setRafInterval, clearRafInterval } from './util/raf-interval';
 import {isMobile} from 'react-device-detect';
 import './App.css';
+import { Button, withStyles } from '@material-ui/core';
 
 const requireContext = require.context("./flappybird", true, /^\.\/.*\.png$/);
 const keys = requireContext.keys();
@@ -134,6 +135,12 @@ class Hud {
   }
 }
 
+const useStyles = theme => ({
+  root: {
+     flexGrow: 1,
+   },
+});
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -167,6 +174,7 @@ class App extends Component {
         left: 100
       },
       gameover: false,
+      gamestart: true,
       introScreen: true,
     };
     this.handleChange = this.handleChange.bind(this);
@@ -235,7 +243,6 @@ class App extends Component {
   getRandomVerticalDistance() {
     return Math.random() * -CONSTANT_260 - 40
   }
-
   computeScore(distanceFlown, pipeSpace, pipeWidth) {
     const pointLength = pipeSpace + pipeWidth;
     const startingDistance = 240
@@ -383,22 +390,16 @@ class App extends Component {
     ],
       velocity: 0,//速度
       gameover: false,
+      gamestart: true,
       score: 0,
       distanceFlown: 0,
     });
     this.initEngine();
   }
   render() {
-    const { gameover, pipespace, g } = this.state;
+    const { gameover, gamestart, classes, pipespace, g } = this.state;
     return (
       <div className="App" >
-        <form className="param-form">
-          <button onClick={this.restart} type="button">RESTART</button>
-          <input value={this.state.value} onChange={(e) => this.handleChange(e, 'value')} />
-          pipespace.x:<input type="range" value={pipespace.x} max="300" onChange={(e) => this.handleChange(e, 'pipespace.x')} />
-          pipespace.y:<input type="range" value={pipespace.y} max="300" onChange={(e) => this.handleChange(e, 'pipespace.y')} />
-          g:<input type="range" value={g} max="20" onChange={(e) => this.handleChange(e, 'g')} />
-        </form>
         <div className="game-container">
           {
             gameover ? (
@@ -419,7 +420,22 @@ class App extends Component {
               </div>
             ) : null
           }
-          <canvas id="canvas" className="game-content" width={CONSTANT_288} height={CONSTANT_512} onClick={this.start}></canvas>
+          {
+            gamestart ? (
+              <div className="gamestart-modal">
+                <button onClick={()=>{
+                  this.setState({
+                    gamestart: false
+                  })
+                }}>
+                  <Button>
+                    Registrarse
+                  </Button>
+                </button>
+              </div>
+            ) : null
+          }
+          <canvas id="canvas" className="game-content" width={CONSTANT_288} height={CONSTANT_512} onClick={gamestart?null:this.start}></canvas>
           { !this.state.introScreen && !gameover && <div className="score-label">Score</div> }
         </div>
       </div>
@@ -427,4 +443,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withStyles(useStyles) (App);
