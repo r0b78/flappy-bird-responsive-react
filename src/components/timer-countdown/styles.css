@@ -1,0 +1,12 @@
+.seconds {
+  font-size: 7em;
+  font-family: Visitor;
+  color: rgb(173, 148, 34);
+}
+
+.minutes {
+  font-size: 5em;
+}
+.colon {
+  font-size: 5em;
+}

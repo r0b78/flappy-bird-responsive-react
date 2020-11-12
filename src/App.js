@@ -3,6 +3,7 @@ import { setRafInterval, clearRafInterval } from './util/raf-interval';
 import {isMobile} from 'react-device-detect';
 import './App.css';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, withStyles } from '@material-ui/core';
+import TimerCountdown from './components/timer-countdown/TimerCountdown';
 
 const requireContext = require.context("./flappybird", true, /^\.\/.*\.png$/);
 const keys = requireContext.keys();
@@ -174,8 +175,10 @@ class App extends Component {
         left: 100
       },
       gameover: false,
-      gamestart: true,
+      gameregister: true,
+      gamemenu: false,
       showModal: false,
+      startTimer: false,
       introScreen: true,
     };
     this.handleChange = this.handleChange.bind(this);
@@ -391,15 +394,18 @@ class App extends Component {
     ],
       velocity: 0,//速度
       gameover: false,
-      gamestart: false,
+      gameregister: false,
+      gamemenu: false,
       showModal: false,
+      startTimer: false,
       score: 0,
       distanceFlown: 0,
     });
     this.initEngine();
   }
   render() {
-    const { gameover, gamestart, showModal, classes, pipespace, g } = this.state;
+    const { gameover, gameregister, showModal, gamemenu,
+      startTimer, classes, pipespace, g } = this.state;
     return (
       <div className="App" >
         <div className="game-container">
@@ -423,7 +429,7 @@ class App extends Component {
             ) : null
           }
           {
-            gamestart && (
+            gameregister && (
               <div className="gamestart-modal">
                   <Button variant="contained" color="primary"
                     onClick={()=>this.setState({
@@ -432,40 +438,70 @@ class App extends Component {
                     Registrarse
                   </Button>
                 <Dialog open={showModal} onClose={()=>this.setState({showModal: false})} aria-labelledby="form-dialog-title">
-                  <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+                  <DialogTitle id="form-dialog-title">Ingrese la Factura</DialogTitle>
                   <DialogContent>
                     <DialogContentText>
-                      To subscribe to this website, please enter your email address here. We will send updates
-                      occasionally.
+                      Ingrese el numero en la parte de arriba de su factura
                     </DialogContentText>
                     <TextField
                       autoFocus
                       margin="dense"
-                      id="name"
-                      label="Email Address"
-                      type="email"
+                      id="factura"
+                      label="Numero de Factura"
+                      type="text"
                       fullWidth
                     />
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={()=>1} color="primary" >
-                      Cancel
+                      Cancelar
                     </Button>
                     <Button 
                       onClick={()=>this.setState({
-                        gamestart:false,
-                        showModal:false
+                        gameregister:false,
+                        showModal:false,
+                        gamemenu:true
                       })} 
                       color="primary"
                     >
-                      Subscribe
+                      Listo
                     </Button>
                   </DialogActions>
                 </Dialog>
               </div>
             )
           }
-          <canvas id="canvas" className="game-content" width={CONSTANT_288} height={CONSTANT_512} onClick={gamestart?null:this.start}></canvas>
+          {
+            gamemenu && (
+              <div className="gamemenu">
+                <div className="gamemenu-button">
+                  {startTimer &&
+                    <TimerCountdown startTime="6"/>
+                  }
+                  <Button 
+                    onClick={()=>{
+                      this.setState({startTimer: true})
+                      setTimeout(()=> {
+                        this.start()
+                        this.setState({gamemenu:false, startTimer: false})  
+                      }, 6000)
+                    }}
+                    variant="contained" 
+                    color="primary"
+                  >
+                    Jugar
+                  </Button>
+                </div>
+                <div className="gamemenu-button"> 
+                  <Button className="gamemenu-button" variant="contained" color="primary">
+                    Puntajes
+                  </Button> 
+                </div>
+              </div>
+            )
+          }
+
+          <canvas id="canvas" className="game-content" width={CONSTANT_288} height={CONSTANT_512} onClick={gameregister?null:this.start}></canvas>
           { !this.state.introScreen && !gameover && <div className="score-label">Score</div> }
         </div>
       </div>
